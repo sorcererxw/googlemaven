@@ -5,8 +5,12 @@ const client = axios.create({
     timeout: 100000,
 })
 
-export function getMavenPackage() {
-    return client.get(`/maven`)
+export function getPackageList() {
+    return client.get('/package')
+}
+
+export function getFullGroup() {
+    return client.get(`/group?full=true`)
 }
 
 export function getGroups() {
