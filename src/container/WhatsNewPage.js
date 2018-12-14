@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 import * as api from '../api'
 import moment from "moment"
+import {Collapse} from 'antd'
+
+const Panel = Collapse.Panel
 
 class WhatsNewPage extends Component {
     state = {
@@ -9,7 +12,7 @@ class WhatsNewPage extends Component {
 
     componentDidMount() {
         api.getPackageList().then(res => {
-            this.setState({data: res.data.sort((a, b) => a.date - b.date)})
+            this.setState({data: res.data.sort((a, b) => a.date >= b.date ? -1 : 1)})
         }).catch(err => console.log(err))
     }
 
@@ -18,22 +21,32 @@ class WhatsNewPage extends Component {
     }
 
     render() {
-        const newList = []
+        const map = {}
         for (let i = 0; i < this.state.data.length; i++) {
-            if (i === 0 || moment(this.state.data[i].date).diff(moment(this.state.data[i - 1].date), 'days') !== 0) {
-                newList.push(<h2>{moment(this.state.data[i].date).calendar()}</h2>)
-            }
-            newList.push(
-                <div>
-                    <code>{this.toDependency(this.state.data[i])}</code>
-                </div>
-            )
+            const date = moment(this.state.data[i].date).format("YYYY/MM/DD")
+            if (map[date] === undefined) map[date] = []
+            map[date].push(this.state.data[i])
+        }
+
+        const panels = []
+        let key = 1
+        for (let date in map) {
+            const panel = <Panel header={date} key={key++}>
+                {
+                    map[date].map(it =>
+                        <div><code>{this.toDependency(it)}</code></div>
+                    )
+                }
+            </Panel>
+            panels.push(panel)
         }
 
         return (
             <div>
                 <h1>What's New</h1>
-                {newList}
+                <Collapse accordion>
+                    {panels}
+                </Collapse>
             </div>
         )
     }
