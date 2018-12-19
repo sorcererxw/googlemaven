@@ -4,7 +4,7 @@ import {Tree} from 'antd'
 
 const {TreeNode} = Tree
 
-class HomePage extends Component {
+class MavenTreePage extends Component {
     state = {
         data: [],
     }
@@ -39,4 +39,4 @@ class HomePage extends Component {
     }
 }
 
-export default HomePage
+export default MavenTreePage
